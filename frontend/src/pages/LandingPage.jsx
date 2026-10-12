@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
   Film,
@@ -44,7 +45,7 @@ const usage = [
 ];
 
 const faqs = [
-  { q: "Siapa yang bisa mengakses sistem ini?", a: "Hanya administrator terdaftar. Akun dibuat dan dikelola oleh Super Admin." },
+  { q: "Siapa yang bisa mengakses sistem ini?", a: "Hanya administrator terdaftar. Setiap administrator memiliki hak akses penuh untuk mengelola siaran." },
   { q: "Apakah konten bisa dijadwalkan?", a: "Bisa. Playlist dapat diberi jadwal tayang dan dikirim ke perangkat TV tertentu." },
   { q: "Bagaimana cara mengetahui TV sedang aktif?", a: "Setiap perangkat menampilkan status online atau offline di dashboard." },
   { q: "Apakah satu playlist bisa dipakai di banyak TV?", a: "Bisa. Satu playlist dapat ditujukan ke beberapa perangkat sekaligus." },
@@ -244,13 +245,13 @@ function LandingPage() {
           <p className="mt-2 text-body text-white/70">
             Masuk sebagai administrator untuk mulai mengatur konten dan penayangan.
           </p>
-          <a
-            href="/login"
-            className="mt-6 h-10 px-5 inline-flex items-center gap-2 rounded-lg bg-white text-primary text-body font-semibold hover:bg-tint"
+          <Link
+            to="/login"
+            className="mt-6 h-10 px-5 inline-flex items-center gap-2 rounded-lg bg-white text-primary text-body font-semibold hover:bg-tint transition"
           >
             Masuk ke Sistem
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </div>
       </section>
 
