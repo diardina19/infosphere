@@ -3,7 +3,7 @@ import { Home, ChevronRight } from "lucide-react";
 import { menuItems } from "../layouts/menu";
 
 // TODO: ganti dengan data admin yang sedang login (misalnya dari AuthContext)
-const user = { name: "Admin", role: "Super Admin" };
+const user = { name: "Admin", role: "Administrator" };
 
 function Header() {
   const { pathname } = useLocation();
