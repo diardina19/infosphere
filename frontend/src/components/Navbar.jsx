@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Tv } from "lucide-react";
 
 const links = [
@@ -33,12 +34,12 @@ function Navbar() {
           ))}
         </nav>
 
-        <a
-          href="/login"
-          className="h-10 px-5 inline-flex items-center rounded-lg bg-primary hover:bg-dark text-white text-body font-semibold"
+        <Link
+          to="/login"
+          className="h-10 px-5 inline-flex items-center rounded-lg bg-primary hover:bg-dark text-white text-body font-semibold transition"
         >
           Masuk
-        </a>
+        </Link>
       </div>
     </header>
   );
