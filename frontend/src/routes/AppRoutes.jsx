@@ -1,5 +1,7 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
+import Login from "../pages/Login";
+import LupaKataSandi from "../pages/LupaKataSandi";
 import AdminLayout from "../layouts/AdminLayout";
 import Konten from "../pages/Konten";
 
@@ -14,33 +16,14 @@ function Placeholder({ title }) {
   );
 }
 
-// Sementara, sampai halaman login asli dibuat oleh tim.
-// Tombolnya hanya untuk pindah ke dashboard saat pengembangan.
-function LoginPlaceholder() {
-  return (
-    <div className="min-h-screen bg-surface flex items-center justify-center p-8">
-      <div className="w-full max-w-sm bg-white border border-line rounded-xl shadow-card p-8 text-center">
-        <h1 className="text-section font-semibold">Login</h1>
-        <p className="mt-2 text-body text-muted">
-          Halaman login sedang dibuat oleh tim.
-        </p>
-        <Link
-          to="/dashboard"
-          className="mt-6 h-10 px-5 inline-flex items-center rounded-lg bg-primary hover:bg-dark text-white text-body font-semibold"
-        >
-          Lanjut ke Dashboard (sementara)
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 function AppRoutes() {
   return (
     <Routes>
       {/* Halaman publik */}
       <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPlaceholder />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/lupa-kata-sandi" element={<LupaKataSandi />} />
+      <Route path="/forgot-password" element={<LupaKataSandi />} />
 
       {/* Halaman admin: semua memakai sidebar + header */}
       <Route element={<AdminLayout />}>
