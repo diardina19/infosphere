@@ -1,9 +1,9 @@
 import { useLocation } from "react-router-dom";
-import { Home, ChevronRight } from "lucide-react";
+import { Home, ChevronRight, ChevronDown } from "lucide-react";
 import { menuItems } from "../layouts/menu";
 
 // TODO: ganti dengan data admin yang sedang login (misalnya dari AuthContext)
-const user = { name: "Admin", role: "Administrator" };
+const user = { name: "Raka Aditya", role: "Administrator" };
 
 function Header() {
   const { pathname } = useLocation();
@@ -23,14 +23,14 @@ function Header() {
         <span className="font-medium text-ink">{current ? current.label : ""}</span>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 cursor-pointer">
         <span className="w-9 h-9 rounded-full bg-tint text-primary text-caption font-semibold flex items-center justify-center">
           {initials}
         </span>
-        <span className="leading-tight">
-          <span className="block text-body font-medium text-ink">{user.name}</span>
-          <span className="block text-caption text-muted">{user.role}</span>
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-body font-medium text-ink">{user.name}</span>
+          <ChevronDown size={14} className="text-muted" />
+        </div>
       </div>
     </header>
   );
