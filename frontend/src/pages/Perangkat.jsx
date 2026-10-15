@@ -331,13 +331,11 @@ function Perangkat() {
         <StatCard
           label="Total perangkat"
           value={devices.length}
-          note={`${new Set(devices.map((d) => d.location.split("·")[0].trim())).size} kota`}
           icon={Monitor}
         />
         <StatCard
           label="Online"
           value={totalOnline}
-          note={`${Math.round((totalOnline / devices.length) * 100)}% jaringan`}
           noteClass="text-success font-medium"
           icon={Wifi}
           iconClass="bg-success/10 text-success"
@@ -345,7 +343,6 @@ function Perangkat() {
         <StatCard
           label="Offline"
           value={totalOffline + totalMaintenance}
-          note="Perlu diperiksa"
           noteClass="text-danger font-medium"
           icon={WifiOff}
           iconClass="bg-danger/10 text-danger"
