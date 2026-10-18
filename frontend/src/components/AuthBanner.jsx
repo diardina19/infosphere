@@ -7,10 +7,10 @@ function AuthBanner() {
     <div className="relative w-full lg:w-1/2 min-h-[300px] lg:min-h-screen bg-dark text-white flex flex-col justify-between p-8 sm:p-12 overflow-hidden select-none">
       {/* Background visual dengan gambar server / control room & overlay gradient */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity scale-105"
+        className="absolute inset-0 bg-cover bg-center opacity-60 scale-105 transition-opacity"
         style={{ backgroundImage: `url(${authBg})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#001f3d]/95 via-dark/90 to-[#00172e]/98" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#001f3d]/75 via-[#002b50]/70 to-[#00172e]/80" />
 
       {/* Efek grid dot halus */}
       <div

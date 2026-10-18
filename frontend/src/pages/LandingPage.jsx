@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import authBg from "../assets/auth-bg.png";
 import {
   Film,
   ListVideo,
@@ -90,21 +91,39 @@ function LandingPage() {
       <Navbar />
 
       {/* Hero */}
-      <section id="beranda" className="bg-dark text-white scroll-mt-18">
-        <div className="max-w-3xl mx-auto px-8 py-24 text-center">
-          <span className="inline-block text-caption text-white/80 border border-white/20 rounded-full px-3 py-1">
+      <section id="beranda" className="relative bg-dark text-white scroll-mt-18 overflow-hidden select-none">
+        {/* Background visual dengan gambar server / control room seperti di halaman login */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-45 scale-105 pointer-events-none"
+          style={{ backgroundImage: `url(${authBg})` }}
+        />
+        {/* Overlay gradien biru agar tetap elegan, teks mudah terbaca, dan gambar terlihat pas */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#001f3d]/80 via-[#002b50]/75 to-[#00172e]/85 pointer-events-none" />
+
+        {/* Efek grid dot halus */}
+        <div
+          className="absolute inset-0 opacity-10 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
+        <div className="relative z-10 max-w-3xl mx-auto px-8 py-24 text-center">
+          <span className="inline-block text-caption text-white/90 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3.5 py-1 shadow-2xs">
             Sistem manajemen jaringan layar
           </span>
-          <h1 className="mt-6 text-metric font-bold">
+          <h1 className="mt-6 text-metric font-bold text-white drop-shadow-sm">
             Kelola seluruh jaringan layar
             <br />
             dalam satu tempat.
           </h1>
-          <p className="mt-4 max-w-xl mx-auto text-body text-white/70">
+          <p className="mt-4 max-w-xl mx-auto text-body text-white/80 leading-relaxed">
             Dari konten hingga perangkat, satukan pengelolaan siaran Anda.
             Susun playlist, atur jadwal, dan pantau layar di setiap lokasi.
           </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-caption text-white/70">
+          <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-caption text-white/80">
             {["Konten terorganisir", "Jadwal terencana", "Perangkat terpantau"].map((item) => (
               <span key={item} className="inline-flex items-center gap-2">
                 <Check size={14} className="text-accent" />
