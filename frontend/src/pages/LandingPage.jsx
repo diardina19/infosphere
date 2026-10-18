@@ -112,16 +112,15 @@ function LandingPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-8 py-24 text-center">
           <span className="inline-block text-caption text-white/90 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3.5 py-1 shadow-2xs">
-            Sistem manajemen jaringan layar
+            Sistem Informasi Perusahaan
           </span>
           <h1 className="mt-6 text-metric font-bold text-white drop-shadow-sm">
-            Kelola seluruh jaringan layar
+            Kelola seluruh layar informasi perusahaan
             <br />
             dalam satu tempat.
           </h1>
           <p className="mt-4 max-w-xl mx-auto text-body text-white/80 leading-relaxed">
-            Dari konten hingga perangkat, satukan pengelolaan siaran Anda.
-            Susun playlist, atur jadwal, dan pantau layar di setiap lokasi.
+            Atur konten, playlist, dan jadwal tayang secara terpusat untuk seluruh layar PT Sumitomo.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-caption text-white/80">
             {["Konten terorganisir", "Jadwal terencana", "Perangkat terpantau"].map((item) => (

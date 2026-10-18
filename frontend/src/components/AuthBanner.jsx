@@ -59,11 +59,11 @@ function AuthBanner() {
       {/* Bagian Tengah: Headline & Deskripsi */}
       <div className="relative z-10 my-10 lg:my-auto max-w-xl">
         <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white leading-tight">
-          Kelola seluruh jaringan layar dalam satu tempat.
+          Kelola seluruh layar informasi perusahaan dalam satu tempat.
         </h1>
         <p className="mt-4 text-body sm:text-card text-white/70 leading-relaxed">
-          Akses pusat kendali siaran video dan audio kampus secara terdistribusi,
-          tersinkronisasi, dan dapat diandalkan.
+          Sistem pengelolaan konten terpusat untuk PT Sumitomo yang memungkinkan informasi ditampilkan 
+          secara serentak, terjadwal, dan konsisten di seluruh layar perusahaan.
         </p>
       </div>
 
