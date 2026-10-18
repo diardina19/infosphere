@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Tv, LogOut, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { menuItems } from "../layouts/menu";
+import logoImg from "../assets/logo.png";
 
 // ─── Modal Konfirmasi Logout ──────────────────────────────────────────────────
 function ModalLogout({ onClose, onConfirm }) {
@@ -80,9 +81,11 @@ function Sidebar() {
       <aside className="w-60 shrink-0 self-start sticky top-0 h-screen bg-dark text-white flex flex-col">
         {/* Brand */}
         <div className="h-18 px-6 flex items-center gap-3 border-b border-white/10">
-          <span className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-            <Tv size={20} />
-          </span>
+          <img
+            src={logoImg}
+            alt="Logo InfoSphere"
+            className="w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm"
+          />
           <span>
             <span className="block text-body font-semibold">InfoSphere</span>
             <span className="block text-caption text-white/60">Sistem Manajemen</span>

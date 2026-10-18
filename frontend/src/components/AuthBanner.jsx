@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Tv, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import authBg from "../assets/auth-bg.png";
+import logoImg from "../assets/logo.png";
 
 function AuthBanner() {
   return (
@@ -29,9 +30,11 @@ function AuthBanner() {
           title="Kembali ke Halaman Utama"
           className="group flex items-center gap-3 transition"
         >
-          <span className="w-10 h-10 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-white group-hover:bg-white/20 transition shadow-sm">
-            <Tv size={20} />
-          </span>
+          <img
+            src={logoImg}
+            alt="Logo InfoSphere"
+            className="w-10 h-10 rounded-lg object-contain bg-white p-1 shadow-sm"
+          />
           <div>
             <span className="block text-body font-semibold tracking-tight text-white group-hover:text-white/90">
               infosphere
