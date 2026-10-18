@@ -22,21 +22,21 @@ function Modal({ title, onClose, children }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="w-full max-w-md bg-white rounded-xl shadow-lg"
+        className="w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-xl shadow-lg overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-line shrink-0">
           <h2 className="text-card font-semibold text-ink">{title}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Tutup"
-            className="p-1 rounded-md text-muted hover:bg-surface"
+            className="p-1 rounded-md text-muted hover:bg-surface cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
-        <div className="px-6 pb-6">{children}</div>
+        <div className="px-6 py-5 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import Konten from "../pages/Konten";
 import Perangkat from "../pages/Perangkat";
 import Playlist from '../pages/Playlist';
 import PlaylistDetail from '../pages/PlaylistDetail';
+import AkunAdmin from "../pages/AkunAdmin";
 
 // Sementara, untuk halaman yang belum dibuat.
 // Ganti elemen <Placeholder /> dengan halaman aslinya, misalnya <Konten />.
@@ -39,7 +40,7 @@ function AppRoutes() {
         <Route path="/perangkat" element={<Perangkat />} />
         <Route path="/playback" element={<Placeholder title="Playback" />} />
         <Route path="/history" element={<Placeholder title="History" />} />
-        <Route path="/akun-admin" element={<Placeholder title="Akun Admin" />} />
+        <Route path="/akun-admin" element={<AkunAdmin />} />
       </Route>
     </Routes>
   );
