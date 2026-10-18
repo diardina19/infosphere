@@ -94,9 +94,6 @@ function Sidebar() {
 
         {/* Menu */}
         <nav className="flex-1 px-4 py-6 overflow-y-auto">
-          <p className="px-3 mb-3 text-caption uppercase tracking-wider text-white/50">
-            Menu utama
-          </p>
           <ul className="space-y-1">
             {menuItems.map(({ label, path, icon: Icon }) => (
               <li key={path}>
