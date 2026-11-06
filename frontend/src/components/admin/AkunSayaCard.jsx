@@ -1,6 +1,6 @@
-import { Pencil, ShieldCheck, Mail, User, CheckCircle2 } from "lucide-react";
+import { Pencil, ShieldCheck, Mail, User, CheckCircle2, KeyRound } from "lucide-react";
 
-export default function AkunSayaCard({ currentAdmin, onEditClick }) {
+export default function AkunSayaCard({ currentAdmin, onEditClick, onChangePasswordClick }) {
   if (!currentAdmin) return null;
 
   const initials = (currentAdmin.name || "RA")
@@ -71,8 +71,8 @@ export default function AkunSayaCard({ currentAdmin, onEditClick }) {
         </div>
       </div>
 
-      {/* Bagian Bawah: Tombol Aksi Edit Akun */}
-      <div className="w-full pt-6">
+      {/* Bagian Bawah: Tombol Aksi */}
+      <div className="w-full pt-6 space-y-2.5">
         <button
           type="button"
           onClick={onEditClick}
@@ -80,6 +80,14 @@ export default function AkunSayaCard({ currentAdmin, onEditClick }) {
         >
           <Pencil size={16} />
           <span>Edit Akun Saya</span>
+        </button>
+        <button
+          type="button"
+          onClick={onChangePasswordClick}
+          className="w-full h-11 rounded-lg bg-white hover:bg-surface text-ink hover:text-primary border border-line hover:border-primary/30 text-body font-semibold flex items-center justify-center gap-2 transition cursor-pointer shadow-2xs"
+        >
+          <KeyRound size={16} />
+          <span>Ubah Password</span>
         </button>
       </div>
     </div>
