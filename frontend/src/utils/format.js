@@ -64,3 +64,8 @@ export function statusPlaylist(playlist) {
   if (playlist?.tayang) return "tayang";
   return playlist?.itemIds?.length > 0 ? "siap" : "kosong";
 }
+
+// 1 -> "TV-001"
+export function formatIdTv(id) {
+  return `TV-${String(id).padStart(3, "0")}`;
+}

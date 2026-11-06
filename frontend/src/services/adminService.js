@@ -9,9 +9,13 @@ export const INITIAL_CURRENT_ADMIN = {
   id: "me",
   name: "Raka Aditya",
   email: "raka.aditya@streamingtv.id",
+  password: "admin123",
   status: "Aktif",
   badge: "Akun Anda",
   joinedDate: "12 Januari 2026",
+  wajibGantiPassword: false,
+  dinonaktifkanOleh: null,
+  tanggalDinonaktifkan: null,
 };
 
 export const INITIAL_ADMIN_LIST = [
@@ -19,49 +23,67 @@ export const INITIAL_ADMIN_LIST = [
     id: 1,
     name: "Maya Lestari",
     email: "maya.lestari@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Super Admin",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
   {
     id: 2,
     name: "Dedi Kurniawan",
     email: "dedi.kurniawan@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Editor",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
   {
     id: 3,
     name: "Aulia Putri",
     email: "aulia.putri@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Reporter",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
   {
     id: 4,
     name: "Rara Putri",
     email: "rara.putri@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Reporter",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
   {
     id: 5,
     name: "Andi Pratama",
     email: "andi.pratama@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Editor",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
   {
     id: 6,
     name: "Keisha Putri",
     email: "keisha.putri@streamingtv.id",
+    password: "admin123",
     subtitle: "Administrator",
-    role: "Reporter",
     status: "Aktif",
+    wajibGantiPassword: false,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
   },
 ];
 
@@ -81,6 +103,7 @@ export function getCurrentAdmin() {
   } catch (err) {
     console.error("Gagal membaca current admin dari storage:", err);
   }
+  localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(INITIAL_CURRENT_ADMIN));
   return INITIAL_CURRENT_ADMIN;
 }
 
@@ -118,14 +141,51 @@ export function getAdminList() {
 }
 
 // Tambah admin baru
-export function tambahAdmin({ name, email, status = "Aktif", password }) {
+// Validasi dilakukan di service agar mudah diganti ke API
+export function tambahAdmin({ name, email, password }) {
+  if (!name || !name.trim()) {
+    throw new Error("Nama lengkap wajib diisi.");
+  }
+
+  if (!email || !email.trim()) {
+    throw new Error("Alamat email wajib diisi.");
+  }
+
+  // Validasi format email sederhana
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.trim())) {
+    throw new Error("Format email tidak valid.");
+  }
+
+  // Cek email sudah dipakai admin lain
   const admins = getAdminList();
+  const current = getCurrentAdmin();
+  const emailLower = email.trim().toLowerCase();
+  const emailSudahAda =
+    admins.some((a) => a.email.toLowerCase() === emailLower) ||
+    current.email.toLowerCase() === emailLower;
+  if (emailSudahAda) {
+    throw new Error("Email ini sudah digunakan oleh admin lain.");
+  }
+
+  if (!password) {
+    throw new Error("Password awal wajib diisi.");
+  }
+
+  if (password.length < 8) {
+    throw new Error("Password minimal 8 karakter.");
+  }
+
   const baru = {
     id: Date.now(),
     name: name.trim(),
     email: email.trim(),
+    password: password,
     subtitle: "Administrator",
-    status: status || "Aktif",
+    status: "Aktif",
+    wajibGantiPassword: true,
+    dinonaktifkanOleh: null,
+    tanggalDinonaktifkan: null,
     createdAt: new Date().toISOString(),
   };
 
@@ -134,7 +194,160 @@ export function tambahAdmin({ name, email, status = "Aktif", password }) {
   return baru;
 }
 
-// Hapus admin lain dengan alasan yang dipilih
+// Nonaktifkan admin lain
+// Validasi: tidak boleh menonaktifkan diri sendiri, minimal 1 admin aktif, password konfirmasi benar
+export function nonaktifkanAdmin(id, passwordKonfirmasi) {
+  const current = getCurrentAdmin();
+
+  // Tidak boleh menonaktifkan diri sendiri
+  if (String(id) === String(current.id)) {
+    throw new Error("Anda tidak dapat menonaktifkan akun Anda sendiri.");
+  }
+
+  // Validasi password admin yang sedang login
+  if (!passwordKonfirmasi) {
+    throw new Error("Password konfirmasi wajib diisi.");
+  }
+  if (passwordKonfirmasi !== current.password) {
+    throw new Error("Password salah.");
+  }
+
+  const admins = getAdminList();
+  const target = admins.find((a) => a.id === id);
+  if (!target) {
+    throw new Error("Admin tidak ditemukan.");
+  }
+
+  if (target.status === "Nonaktif") {
+    throw new Error("Admin ini sudah dalam status Nonaktif.");
+  }
+
+  // Hitung admin aktif (termasuk current admin)
+  const adminAktifLain = admins.filter(
+    (a) => a.status === "Aktif" && a.id !== id
+  ).length;
+  // current admin selalu aktif (karena sedang login)
+  const totalAktifSetelah = adminAktifLain + 1; // +1 untuk current admin
+  if (totalAktifSetelah < 1) {
+    throw new Error(
+      "Tidak dapat menonaktifkan admin ini. Minimal harus ada satu admin aktif dalam sistem."
+    );
+  }
+
+  // Update status
+  const now = new Date();
+  const tanggalFormatted = now.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const updated = admins.map((a) => {
+    if (a.id === id) {
+      return {
+        ...a,
+        status: "Nonaktif",
+        dinonaktifkanOleh: current.name,
+        tanggalDinonaktifkan: tanggalFormatted,
+      };
+    }
+    return a;
+  });
+
+  localStorage.setItem(STORAGE_KEY_ADMINS, JSON.stringify(updated));
+
+  // Simpan riwayat
+  try {
+    const rawHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
+    const history = rawHistory ? JSON.parse(rawHistory) : [];
+    history.unshift({
+      id: Date.now(),
+      targetAdmin: { id: target.id, name: target.name, email: target.email },
+      action: "nonaktifkan",
+      doneBy: current.name,
+      timestamp: now.toISOString(),
+    });
+    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+  } catch (err) {
+    console.error("Gagal menyimpan riwayat:", err);
+  }
+
+  return updated.find((a) => a.id === id);
+}
+
+// Aktifkan kembali admin yang dinonaktifkan
+export function aktifkanAdmin(id) {
+  const admins = getAdminList();
+  const target = admins.find((a) => a.id === id);
+  if (!target) {
+    throw new Error("Admin tidak ditemukan.");
+  }
+
+  if (target.status === "Aktif") {
+    throw new Error("Admin ini sudah dalam status Aktif.");
+  }
+
+  const updated = admins.map((a) => {
+    if (a.id === id) {
+      return {
+        ...a,
+        status: "Aktif",
+        dinonaktifkanOleh: null,
+        tanggalDinonaktifkan: null,
+      };
+    }
+    return a;
+  });
+
+  localStorage.setItem(STORAGE_KEY_ADMINS, JSON.stringify(updated));
+  return updated.find((a) => a.id === id);
+}
+
+// Ubah password akun yang sedang login
+export function changePassword(id, passwordLama, passwordBaru) {
+  const current = getCurrentAdmin();
+
+  if (String(id) !== String(current.id)) {
+    throw new Error("Anda hanya dapat mengubah password akun Anda sendiri.");
+  }
+
+  if (!passwordLama) {
+    throw new Error("Password lama wajib diisi.");
+  }
+
+  if (passwordLama !== current.password) {
+    throw new Error("Password lama tidak sesuai.");
+  }
+
+  if (!passwordBaru) {
+    throw new Error("Password baru wajib diisi.");
+  }
+
+  if (passwordBaru.length < 8) {
+    throw new Error("Password baru minimal 8 karakter.");
+  }
+
+  if (passwordBaru === passwordLama) {
+    throw new Error("Password baru tidak boleh sama dengan password lama.");
+  }
+
+  const updated = {
+    ...current,
+    password: passwordBaru,
+    wajibGantiPassword: false,
+  };
+
+  localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(updated));
+
+  // Trigger event agar komponen lain update
+  window.dispatchEvent(
+    new CustomEvent("admin-profile-updated", { detail: updated })
+  );
+
+  return updated;
+}
+
+// Hapus admin lain dengan alasan yang dipilih (legacy, tetap dipertahankan untuk kompatibilitas)
 export function hapusAdmin(id, reason, note = "") {
   const admins = getAdminList();
   const target = admins.find((a) => a.id === id);

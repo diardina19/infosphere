@@ -1,10 +1,10 @@
 let data = [
-  { id: 1, nama: 'Promo Q4 Nasional', itemIds: [2, 4, 1], tayang: true, jumlahTv: 8, diperbarui: '2026-09-30T13:45:00' },
-  { id: 2, nama: 'Informasi Layanan Publik', itemIds: [1, 3, 5], tayang: false, jumlahTv: 0, diperbarui: '2026-09-30T11:20:00' },
-  { id: 3, nama: 'Materi Internal Cabang', itemIds: [7, 3], tayang: false, jumlahTv: 0, diperbarui: '2026-09-28T09:32:00' },
-  { id: 4, nama: 'Program Akhir Pekan', itemIds: [6], tayang: false, jumlahTv: 0, diperbarui: '2026-09-27T14:55:00' },
+  { id: 1, nama: 'Promo Q4 Nasional', itemIds: [], tayang: false, jumlahTv: 0, diperbarui: '2026-09-30T13:45:00' },
+  { id: 2, nama: 'Informasi Layanan Publik', itemIds: [], tayang: false, jumlahTv: 0, diperbarui: '2026-09-30T11:20:00' },
+  { id: 3, nama: 'Materi Internal Cabang', itemIds: [], tayang: false, jumlahTv: 0, diperbarui: '2026-09-28T09:32:00' },
+  { id: 4, nama: 'Program Akhir Pekan', itemIds: [], tayang: false, jumlahTv: 0, diperbarui: '2026-09-27T14:55:00' },
   { id: 5, nama: 'Edukasi Keselamatan', itemIds: [], tayang: false, jumlahTv: 0, diperbarui: '2026-09-24T10:10:00' },
-]
+] 
 let nextId = 6
 
 function sekarang() {
@@ -77,4 +77,13 @@ export async function hapusKontenDariSemuaPlaylist(kontenId) {
       ? { ...p, itemIds: p.itemIds.filter((k) => k !== kontenId), diperbarui: sekarang() }
       : p
   )
+}
+
+// tandai satu playlist sebagai tayang (id null = tidak ada yang tayang)
+export async function setTayang(id, jumlahTv = 0) {
+  data = data.map((p) => ({
+    ...p,
+    tayang: p.id === id,
+    jumlahTv: p.id === id ? jumlahTv : 0,
+  }))
 }

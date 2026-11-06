@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Search,
   Plus,
-  Trash2,
   ChevronLeft,
   ChevronRight,
   CheckCircle,
@@ -10,15 +9,23 @@ import {
   Info,
   X,
   Users,
+  ShieldOff,
+  ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 import AkunSayaCard from "../components/admin/AkunSayaCard";
 import EditAkunModal from "../components/admin/EditAkunModal";
-import HapusAdminModal from "../components/admin/HapusAdminModal";
+import TambahAdminModal from "../components/admin/TambahAdminModal";
+import NonaktifkanAdminModal from "../components/admin/NonaktifkanAdminModal";
+import UbahPasswordModal from "../components/admin/UbahPasswordModal";
 import {
   getCurrentAdmin,
   updateCurrentAdmin,
   getAdminList,
-  hapusAdmin,
+  tambahAdmin,
+  nonaktifkanAdmin,
+  aktifkanAdmin,
+  changePassword,
 } from "../services/adminService";
 
 const PAGE_SIZE = 6;
@@ -31,7 +38,9 @@ export default function AkunAdmin() {
 
   // Modal states
   const [showEditMe, setShowEditMe] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [showTambah, setShowTambah] = useState(false);
+  const [deactivateTarget, setDeactivateTarget] = useState(null);
+  const [showUbahPassword, setShowUbahPassword] = useState(false);
 
   // Toast / feedback message
   const [toast, setToast] = useState(null);
@@ -73,19 +82,55 @@ export default function AkunAdmin() {
     }
   };
 
-  // Handler Hapus Admin Lain dengan Alasan
-  const handleConfirmDelete = (id, reason, note) => {
+  // Handler Tambah Admin Baru
+  const handleTambahAdmin = (data) => {
     try {
-      const target = adminList.find((a) => a.id === id);
-      hapusAdmin(id, reason, note);
+      const baru = tambahAdmin(data);
       setAdminList(getAdminList());
-      setDeleteTarget(null);
-      showToast(
-        `Akun admin "${target?.name || "Admin"}" berhasil dihapus.`
-      );
+      setShowTambah(false);
+      showToast(`Akun admin "${baru.name}" berhasil ditambahkan.`);
     } catch (err) {
       console.error(err);
-      showToast(err.message || "Gagal menghapus admin.", "error");
+      showToast(err.message || "Gagal menambahkan admin.", "error");
+      throw err; // Re-throw agar modal tahu ada error
+    }
+  };
+
+  // Handler Nonaktifkan Admin
+  const handleNonaktifkan = (id, password) => {
+    try {
+      const result = nonaktifkanAdmin(id, password);
+      setAdminList(getAdminList());
+      setDeactivateTarget(null);
+      showToast(`Akun admin "${result.name}" berhasil dinonaktifkan.`);
+    } catch (err) {
+      console.error(err);
+      throw err; // Re-throw agar modal menampilkan error
+    }
+  };
+
+  // Handler Aktifkan Admin
+  const handleAktifkan = (id) => {
+    try {
+      const result = aktifkanAdmin(id);
+      setAdminList(getAdminList());
+      showToast(`Akun admin "${result.name}" berhasil diaktifkan kembali.`);
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Gagal mengaktifkan admin.", "error");
+    }
+  };
+
+  // Handler Ubah Password
+  const handleUbahPassword = (passwordLama, passwordBaru) => {
+    try {
+      const updated = changePassword(currentAdmin.id, passwordLama, passwordBaru);
+      setCurrentAdmin(updated);
+      setShowUbahPassword(false);
+      showToast("Password berhasil diubah.");
+    } catch (err) {
+      console.error(err);
+      throw err; // Re-throw agar modal menampilkan error
     }
   };
 
@@ -108,6 +153,9 @@ export default function AkunAdmin() {
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
+
+  // Hitung jumlah admin aktif (termasuk current admin)
+  const adminAktifCount = adminList.filter((a) => a.status === "Aktif").length + 1;
 
   return (
     <div className="space-y-6">
@@ -144,22 +192,35 @@ export default function AkunAdmin() {
       {/* Header Halaman: Judul & Tombol Tambah Admin Baru */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-section sm:text-title font-bold text-ink">
-            Manajemen Admin
-          </h1>
-          <p className="text-body text-muted mt-1">
-            Kelola hak akses administrator sistem InfoSphere dan pengaturan akun Anda.
-          </p>
+          <h1 className="text-section font-bold text-ink">Kelola Admin</h1>
         </div>
 
         <button
           type="button"
+          onClick={() => setShowTambah(true)}
           className="h-11 px-5 rounded-lg bg-primary hover:bg-dark text-white text-body font-semibold inline-flex items-center justify-center gap-2 shadow-sm transition cursor-pointer shrink-0"
         >
           <Plus size={18} />
           <span>Tambah Admin Baru</span>
         </button>
       </div>
+
+      {/* Banner Wajib Ganti Password */}
+      {currentAdmin.wajibGantiPassword && (
+        <div className="flex items-center gap-3 p-3.5 bg-amber-50 border border-amber-200 rounded-xl">
+          <AlertTriangle size={18} className="text-amber-600 shrink-0" />
+          <p className="text-body text-amber-800 flex-1">
+            Anda menggunakan password awal. Segera ganti password Anda untuk keamanan akun.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowUbahPassword(true)}
+            className="h-8 px-3.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-caption font-semibold shrink-0 transition cursor-pointer shadow-sm"
+          >
+            Ganti Sekarang
+          </button>
+        </div>
+      )}
 
       {/* Konten Utama 2 Kolom (Kiri: Akun Saya, Kanan: Daftar Admin) - Sama Tinggi */}
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
@@ -168,6 +229,7 @@ export default function AkunAdmin() {
           <AkunSayaCard
             currentAdmin={currentAdmin}
             onEditClick={() => setShowEditMe(true)}
+            onChangePasswordClick={() => setShowUbahPassword(true)}
           />
         </div>
 
@@ -227,6 +289,11 @@ export default function AkunAdmin() {
                     .join("")
                     .toUpperCase();
 
+                  const isNonaktif = item.status === "Nonaktif";
+                  const isSelf = String(item.id) === String(currentAdmin.id);
+                  // Tidak boleh nonaktifkan jika tinggal 1 admin aktif
+                  const canDeactivate = !isSelf && adminAktifCount > 1 && !isNonaktif;
+
                   return (
                     <tr
                       key={item.id}
@@ -235,11 +302,16 @@ export default function AkunAdmin() {
                       {/* Kolom Nama */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <span className="w-10 h-10 rounded-full bg-tint text-primary text-caption font-bold flex items-center justify-center shrink-0 border border-primary/10">
+                          <span className={
+                            "w-10 h-10 rounded-full text-caption font-bold flex items-center justify-center shrink-0 border " +
+                            (isNonaktif
+                              ? "bg-gray-100 text-gray-400 border-gray-200"
+                              : "bg-tint text-primary border-primary/10")
+                          }>
                             {initials}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-body font-semibold text-ink truncate">
+                            <p className={"text-body font-semibold truncate " + (isNonaktif ? "text-muted" : "text-ink")}>
                               {item.name}
                             </p>
                             <p className="text-caption text-muted truncate">
@@ -254,26 +326,60 @@ export default function AkunAdmin() {
                         <span className="truncate block max-w-xs">{item.email}</span>
                       </td>
 
-                      {/* Kolom Status (Aktif) */}
+                      {/* Kolom Status */}
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 text-caption font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          {item.status || "Aktif"}
-                        </span>
+                        {isNonaktif ? (
+                          <div>
+                            <span className="inline-flex items-center gap-1.5 text-caption font-medium px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                              Nonaktif
+                            </span>
+                            {item.dinonaktifkanOleh && (
+                              <p className="text-[11px] text-muted mt-1 leading-snug">
+                                Dinonaktifkan oleh {item.dinonaktifkanOleh} pada {item.tanggalDinonaktifkan}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-caption font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Aktif
+                          </span>
+                        )}
                       </td>
 
-                      {/* Kolom Aksi: HANYA ADA TOMBOL HAPUS (Tidak ada edit admin lain) */}
+                      {/* Kolom Aksi */}
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget(item)}
-                            title={`Hapus admin ${item.name}`}
-                            aria-label={`Hapus admin ${item.name}`}
-                            className="p-2 rounded-lg text-danger hover:bg-danger/10 hover:text-red-700 transition cursor-pointer"
-                          >
-                            <Trash2 size={17} />
-                          </button>
+                        <div className="inline-flex items-center justify-center gap-1">
+                          {/* Tombol Nonaktifkan / Aktifkan */}
+                          {!isSelf && (
+                            <>
+                              {isNonaktif ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleAktifkan(item.id)}
+                                  title={`Aktifkan kembali ${item.name}`}
+                                  className="p-2 rounded-lg text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 transition cursor-pointer"
+                                >
+                                  <ShieldCheck size={17} />
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setDeactivateTarget(item)}
+                                  disabled={!canDeactivate}
+                                  title={
+                                    !canDeactivate
+                                      ? "Tidak dapat menonaktifkan. Minimal harus ada satu admin aktif."
+                                      : `Nonaktifkan ${item.name}`
+                                  }
+                                  className="p-2 rounded-lg text-danger hover:bg-danger/10 hover:text-red-700 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                  <ShieldOff size={17} />
+                                </button>
+                              )}
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -342,7 +448,7 @@ export default function AkunAdmin() {
             </div>
           </div>
         </div>
-      </div>
+      </div>x
 
       {/* Modal Edit Akun Saya (Nama, Email, dan Foto Profil) */}
       {showEditMe && (
@@ -353,12 +459,28 @@ export default function AkunAdmin() {
         />
       )}
 
-      {/* Modal Hapus Admin dengan Syarat Poin Alasan */}
-      {deleteTarget && (
-        <HapusAdminModal
-          admin={deleteTarget}
-          onClose={() => setDeleteTarget(null)}
-          onConfirm={handleConfirmDelete}
+      {/* Modal Tambah Admin Baru */}
+      {showTambah && (
+        <TambahAdminModal
+          onClose={() => setShowTambah(false)}
+          onAdd={handleTambahAdmin}
+        />
+      )}
+
+      {/* Modal Nonaktifkan Admin */}
+      {deactivateTarget && (
+        <NonaktifkanAdminModal
+          admin={deactivateTarget}
+          onClose={() => setDeactivateTarget(null)}
+          onConfirm={handleNonaktifkan}
+        />
+      )}
+
+      {/* Modal Ubah Password */}
+      {showUbahPassword && (
+        <UbahPasswordModal
+          onClose={() => setShowUbahPassword(false)}
+          onSave={handleUbahPassword}
         />
       )}
     </div>

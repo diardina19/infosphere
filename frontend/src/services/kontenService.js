@@ -1,7 +1,9 @@
 import {
   tambahItem,
   hapusKontenDariSemuaPlaylist,
-} from "./playlistService";
+} from "./playlistService"
+
+import { formatDurasi } from '../utils/format';
 
 // Data sementara selama aplikasi berjalan.
 let data = [];
@@ -12,45 +14,36 @@ export async function getKonten() {
   return [...data];
 }
 
-// Tambah konten dan masukkan ke playlist pilihan.
-export async function tambahKonten({
-  judul,
-  kategori,
-  deskripsi = "",
-  file,
-  playlistIds = [],
-}) {
-  if (!file) {
-    throw new Error("File video wajib dipilih.");
-  }
+// membaca durasi video dari filenya, hasilnya seperti "02:45"
+function bacaDurasi(url) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video')
+    video.preload = 'metadata'
+    video.onloadedmetadata = () => {
+      const detik = Number.isFinite(video.duration) ? Math.round(video.duration) : 0
+      resolve(formatDurasi(detik))
+    }
+    video.onerror = () => resolve('00:00')
+    video.src = url
+  })
+}
 
+export async function tambahKonten({ judul, kategori, file, playlistIds = [] }) {
+  const url = URL.createObjectURL(file) // alamat sementara file di dalam browser
   const baru = {
     id: nextId++,
     judul,
-    kategori,
-    deskripsi,
-    file,
-    durasi: "00:00",
-    ukuran: Math.max(
-      1,
-      Math.round(file.size / 1024 / 1024)
-    ),
+    durasi: await bacaDurasi(url),
+    ukuran: Math.max(1, Math.round(file.size / 1024 / 1024)),
     tanggal: new Date().toISOString(),
-    status: "aktif",
-  };
-
-  data = [baru, ...data];
-
-  try {
-    for (const playlistId of playlistIds) {
-      await tambahItem(playlistId, [baru.id]);
-    }
-  } catch (error) {
-    data = data.filter((item) => item.id !== baru.id);
-    throw error;
+    status: 'aktif',
+    url,
   }
-
-  return baru;
+  data = [baru, ...data]
+  for (const playlistId of playlistIds) {
+    await tambahItem(playlistId, [baru.id])
+  }
+  return baru
 }
 
 // Hapus konten dan keluarkan dari playlist.

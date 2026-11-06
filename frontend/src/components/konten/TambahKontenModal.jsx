@@ -2,15 +2,6 @@ import { useRef, useState } from "react";
 import { Film } from "lucide-react";
 import Modal from "../Modal";
 
-const categories = [
-  "Informasi Publik",
-  "Promosi",
-  "Tutorial",
-  "Edukasi",
-  "Hiburan",
-  "Internal",
-];
-
 const inputClass =
   "w-full h-10 px-3 bg-white border border-line rounded-lg text-body text-ink placeholder:text-muted focus:outline-none focus:border-primary";
 
@@ -37,8 +28,6 @@ export default function TambahKontenModal({
   const fileInput = useRef(null);
 
   const [judul, setJudul] = useState("");
-  const [kategori, setKategori] = useState(categories[0]);
-  const [deskripsi, setDeskripsi] = useState("");
   const [file, setFile] = useState(null);
   const [duration, setDuration] = useState("");
   const [playlistIds, setPlaylistIds] = useState([]);
@@ -46,9 +35,7 @@ export default function TambahKontenModal({
 
   function togglePlaylist(id) {
     setPlaylistIds((lama) =>
-      lama.includes(id)
-        ? lama.filter((x) => x !== id)
-        : [...lama, id]
+      lama.includes(id) ? lama.filter((x) => x !== id) : [...lama, id]
     );
   }
 
@@ -56,10 +43,6 @@ export default function TambahKontenModal({
     const selected = e.target.files?.[0];
 
     if (!selected) return;
-
-    if (file && file !== selected) {
-      // Bersihkan URL metadata file sebelumnya jika ada.
-    }
 
     setFile(selected);
     setDuration("");
@@ -109,8 +92,6 @@ export default function TambahKontenModal({
 
     onSubmit({
       judul: judul.trim(),
-      kategori,
-      deskripsi: deskripsi.trim(),
       file,
       duration: duration || "-",
       size: formatSize(file.size),
@@ -140,28 +121,6 @@ export default function TambahKontenModal({
         </div>
 
         <div>
-          <label
-            htmlFor="kategori"
-            className="block mb-1.5 text-body font-medium text-ink"
-          >
-            Kategori
-          </label>
-
-          <select
-            id="kategori"
-            value={kategori}
-            onChange={(e) => setKategori(e.target.value)}
-            className={inputClass}
-          >
-            {categories.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
           <span className="block mb-1.5 text-body font-medium text-ink">
             Unggah File Video
           </span>
@@ -183,9 +142,7 @@ export default function TambahKontenModal({
                   </p>
                 </>
               ) : (
-                <p className="text-body text-muted">
-                  Belum ada file dipilih
-                </p>
+                <p className="text-body text-muted">Belum ada file dipilih</p>
               )}
             </div>
 
@@ -209,20 +166,18 @@ export default function TambahKontenModal({
 
         {/* Pilihan playlist */}
         <div>
-          <label className="block mb-1.5 text-sm text-[#66727E]">
+          <label className="block mb-1.5 text-body font-medium text-ink">
             Masukkan ke playlist (opsional)
           </label>
 
           {daftarPlaylist.length === 0 ? (
-            <p className="text-sm text-[#66727E]">
-              Belum ada playlist.
-            </p>
+            <p className="text-body text-muted">Belum ada playlist.</p>
           ) : (
-            <div className="max-h-32 space-y-1 overflow-y-auto rounded-md border border-[#D9E1E8] p-2">
+            <div className="max-h-32 space-y-1 overflow-y-auto rounded-lg border border-line p-2">
               {daftarPlaylist.map((p) => (
                 <label
                   key={p.id}
-                  className="flex items-center gap-2 text-sm text-[#17212B]"
+                  className="flex items-center gap-2 text-body text-ink"
                 >
                   <input
                     type="checkbox"
@@ -234,7 +189,7 @@ export default function TambahKontenModal({
                   <span>{p.nama}</span>
 
                   {p.tayang && (
-                    <span className="text-xs text-[#66727E]">
+                    <span className="text-caption text-muted">
                       (sedang tayang)
                     </span>
                   )}
@@ -244,27 +199,7 @@ export default function TambahKontenModal({
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor="deskripsi"
-            className="block mb-1.5 text-body font-medium text-ink"
-          >
-            Deskripsi
-          </label>
-
-          <textarea
-            id="deskripsi"
-            rows={3}
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
-            placeholder="Keterangan singkat tentang konten ini"
-            className="w-full px-3 py-2 bg-white border border-line rounded-lg text-body text-ink placeholder:text-muted focus:outline-none focus:border-primary resize-none"
-          />
-        </div>
-
-        {error && (
-          <p className="text-caption text-danger">{error}</p>
-        )}
+        {error && <p className="text-caption text-danger">{error}</p>}
 
         <div className="flex justify-end gap-3 pt-2">
           <button

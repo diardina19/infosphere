@@ -126,15 +126,11 @@ function Konten() {
 
   const keyword = search.toLowerCase();
 
-  const filtered = daftar.filter(
-    (item) =>
-      (item.title ?? item.judul ?? "")
-        .toLowerCase()
-        .includes(keyword) ||
-      (item.category ?? item.kategori ?? "")
-        .toLowerCase()
-        .includes(keyword)
-  );
+  const filtered = daftar.filter((item) =>
+  (item.title ?? item.judul ?? "")
+    .toLowerCase()
+    .includes(keyword)
+);
 
   // Tambah konten dari modal.
   const handleTambah = async (data) => {
@@ -272,7 +268,7 @@ function Konten() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Cari judul atau kategori..."
+            placeholder="Cari judul..."
             className="w-full h-10 pl-9 pr-3 bg-white border border-line rounded-lg text-body text-ink placeholder:text-muted focus:outline-none focus:border-primary"
           />
         </div>
@@ -333,7 +329,6 @@ function Konten() {
                         </p>
 
                         <p className="text-caption text-muted">
-                          {item.category ?? item.kategori}
                         </p>
                       </div>
                     </div>

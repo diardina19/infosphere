@@ -1,436 +1,204 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Film,
-  ListVideo,
-  Monitor,
-  ArrowRight,
-} from "lucide-react";
+import { Film, ListVideo, Monitor, ArrowRight } from "lucide-react";
 import StatCard from "../components/StatCard";
-
-// Data ringkasan statistik
-const stats = {
-  totalKonten: 248,
-  playlistAktif: 18,
-  playlistTayang: 6,
-  totalPerangkat: 32,
-  perangkatTerhubung: 28,
-  perangkatOffline: 3,
-};
-
-// Data daftar playlist terbaru (banyak item agar scrollable)
-const recentPlaylists = [
-  {
-    id: 1,
-    title: "Promo Q4 Nasional",
-    count: "12 konten",
-    schedule: "Setiap hari - 06.00–10.00",
-    status: "Tayang",
-  },
-  {
-    id: 2,
-    title: "Informasi Layanan Publik",
-    count: "8 konten",
-    schedule: "Sen–Jum - 10.00–16.00",
-    status: "Tayang",
-  },
-  {
-    id: 3,
-    title: "Kampanye Produk Oktober",
-    count: "16 konten",
-    schedule: "01–31 Okt 2026",
-    status: "Terjadwal",
-  },
-  {
-    id: 4,
-    title: "Materi Internal Cabang",
-    count: "6 konten",
-    schedule: "Belum dijadwalkan",
-    status: "Draft",
-  },
-  {
-    id: 5,
-    title: "Program Akhir Pekan",
-    count: "10 konten",
-    schedule: "Sab–Min - 08.00–20.00",
-    status: "Terjadwal",
-  },
-  {
-    id: 6,
-    title: "Profil & Sejarah Kampus",
-    count: "5 konten",
-    schedule: "Setiap hari - 12.00–14.00",
-    status: "Tayang",
-  },
-  {
-    id: 7,
-    title: "Pengumuman Akademik Polibatam",
-    count: "14 konten",
-    schedule: "Sen–Jum - 08.00–17.00",
-    status: "Terjadwal",
-  },
-  {
-    id: 8,
-    title: "Promo Q4 Nasional",
-    count: "12 konten",
-    schedule: "Setiap hari - 06.00–10.00",
-    status: "Tayang",
-  },
-  {
-    id: 9,
-    title: "Informasi Layanan Publik",
-    count: "8 konten",
-    schedule: "Sen–Jum - 10.00–16.00",
-    status: "Tayang",
-  },
-  {
-    id: 10,
-    title: "Kampanye Produk Oktober",
-    count: "16 konten",
-    schedule: "01–31 Okt 2026",
-    status: "Terjadwal",
-  },
-  {
-    id: 11,
-    title: "Materi Internal Cabang",
-    count: "6 konten",
-    schedule: "Belum dijadwalkan",
-    status: "Draft",
-  },
-  {
-    id: 12,
-    title: "Program Akhir Pekan",
-    count: "10 konten",
-    schedule: "Sab–Min - 08.00–20.00",
-    status: "Terjadwal",
-  },
-];
-
-// Data aktivitas perangkat aktif (banyak item agar scrollable)
-const activeDevices = [
-  {
-    id: 1,
-    code: "TV-LBY-LOBBY-01",
-    location: "Surabaya - Lobby",
-    playlist: "Promo Q4 Nasional",
-    time: "1 mnt lalu",
-    status: "online",
-  },
-  {
-    id: 2,
-    code: "TV-JKT-LANTAI-03",
-    location: "Jakarta - Lantai 3",
-    playlist: "Informasi Layanan Publik",
-    time: "2 mnt lalu",
-    status: "online",
-  },
-  {
-    id: 3,
-    code: "TV-BDG-KASIR-02",
-    location: "Bandung - Area Kasir",
-    playlist: "Promo Q4 Nasional",
-    time: "4 mnt lalu",
-    status: "online",
-  },
-  {
-    id: 4,
-    code: "TV-SMG-TUNGGU-01",
-    location: "Semarang - Ruang Tunggu",
-    playlist: "Program Akhir Pekan",
-    time: "18 mnt lalu",
-    status: "offline",
-  },
-  {
-    id: 5,
-    code: "TV-MDN-LOBBY-02",
-    location: "Medan - Lobby",
-    playlist: "Kampanye Produk Oktober",
-    time: "5 mnt lalu",
-    status: "online",
-  },
-  {
-    id: 6,
-    code: "TV-PLB-AUDITORIUM-01",
-    location: "Palembang - Auditorium",
-    playlist: "Informasi Layanan Publik",
-    time: "3 mnt lalu",
-    status: "online",
-  },
-  {
-    id: 7,
-    code: "TV-YOG-KANTIN-01",
-    location: "Yogyakarta - Area Kantin",
-    playlist: "Promo Q4 Nasional",
-    time: "45 mnt lalu",
-    status: "offline",
-  },
-  {
-    id: 8,
-    code: "TV-DPS-ENTRANCE-01",
-    location: "Denpasar - Pintu Utama",
-    playlist: "Kampanye Produk Oktober",
-    time: "1 mnt lalu",
-    status: "online",
-  },
-];
-
-function PlaylistBadge({ status }) {
-  if (status === "Tayang") {
-    return (
-      <span className="inline-flex items-center text-caption font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200/60">
-        Tayang
-      </span>
-    );
-  }
-  if (status === "Terjadwal") {
-    return (
-      <span className="inline-flex items-center text-caption font-medium px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-600 border border-sky-200/60">
-        Terjadwal
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center text-caption font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-500">
-      Draft
-    </span>
-  );
-}
-
-function DeviceBadge({ status }) {
-  const isOnline = status === "online";
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-caption font-medium px-2.5 py-0.5 rounded-full ${
-        isOnline
-          ? "bg-emerald-50 text-emerald-600 border border-emerald-200/60"
-          : "bg-rose-50 text-rose-600 border border-rose-200/60"
-      }`}
-    >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${
-          isOnline ? "bg-emerald-500" : "bg-rose-500"
-        }`}
-      />
-      {isOnline ? "Online" : "Offline"}
-    </span>
-  );
-}
+import TvStatusBadge from "../components/TvStatusBadge";
+import HasilBadge from "../components/HasilBadge";
+import { getKonten } from "../services/kontenService";
+import { getPlaylist } from "../services/playlistService";
+import { getTv } from "../services/tvService";
+import { getPlayback } from "../services/playbackService";
+import { getRiwayat } from "../services/riwayatService";
+import { formatWaktu } from "../utils/format";
 
 function Dashboard() {
+  const [konten, setKonten] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
+  const [tv, setTv] = useState([]);
+  const [aktif, setAktif] = useState(null);
+  const [riwayat, setRiwayat] = useState([]);
+
+  useEffect(() => {
+    Promise.all([
+      getKonten(),
+      getPlaylist(),
+      getTv(),
+      getPlayback(),
+      getRiwayat(),
+    ]).then(([k, p, t, a, r]) => {
+      setKonten(k);
+      setPlaylist(p);
+      setTv(t);
+      setAktif(a);
+      setRiwayat(r);
+    });
+  }, []);
+
+  const tvOnline = tv.filter((t) => t.online).length;
+  const sedangTayang = playlist.some((p) => p.tayang);
+  const siaranTerbaru = riwayat.slice(0, 10);
+
   return (
     <div className="space-y-6">
-      {/* 1. Baris Kartu Statistik Atas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Kartu statistik */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <StatCard label="Total konten" value={konten.length} icon={Film} />
         <StatCard
-          label="Total konten"
-          value={stats.totalKonten}
-          icon={Film}
-        />
-        <StatCard
-          label="Playlist aktif"
-          value={stats.playlistAktif}
-          note={`${stats.playlistTayang} sedang tayang`}
-          noteClass="text-primary font-medium"
+          label="Total playlist"
+          value={playlist.length}
+          note={sedangTayang ? "1 sedang tayang" : "Belum ada yang tayang"}
+          noteClass={sedangTayang ? "text-success font-medium" : "text-muted"}
           icon={ListVideo}
         />
         <StatCard
           label="Total perangkat"
-          value={stats.totalPerangkat}
-          note={`${stats.perangkatTerhubung} terhubung`}
+          value={tv.length}
+          note={`${tvOnline} terhubung`}
           noteClass="text-success font-medium"
           icon={Monitor}
           iconClass="bg-success/10 text-success"
         />
       </div>
 
-      {/* 2. Grid Konten Utama: 2 Card Besar Sejajar, Simetris & Modern */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Kolom Kiri: Playlist Terbaru (Tinggi 540px dengan scroll vertikal) */}
-        <section className="lg:col-span-7 bg-white border border-line rounded-xl shadow-card overflow-hidden flex flex-col h-[540px]">
-          {/* Header Card */}
-          <div className="px-6 py-4 flex items-center justify-between border-b border-line shrink-0 bg-white">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        {/* Kiri: siaran terbaru */}
+        <section className="flex h-[540px] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card lg:col-span-7">
+          <div className="flex shrink-0 items-center justify-between border-b border-line px-6 py-4">
             <div>
-              <h2 className="text-card font-semibold text-ink">Playlist terbaru</h2>
+              <h2 className="text-card font-semibold text-ink">Siaran terbaru</h2>
               <p className="mt-0.5 text-caption text-muted">
-                Pembaruan jadwal siaran
+                Riwayat playlist yang diputar ke TV
               </p>
             </div>
             <Link
-              to="/playlist"
-              className="h-8 px-3.5 inline-flex items-center gap-1.5 rounded-lg border border-line text-caption font-medium text-ink hover:bg-surface transition"
+              to="/history"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line px-3.5 text-caption font-medium text-ink transition hover:bg-surface"
             >
               <span>Lihat semua</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
-          {/* Tabel / Daftar Playlist dengan Fitur Scroll Vertikal */}
           <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10 bg-surface/95 backdrop-blur-sm border-b border-line shadow-xs">
-                <tr>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                    PLAYLIST
-                  </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                    JADWAL
-                  </th>
-                  <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted text-right">
-                    STATUS
-                  </th>
+            <table className="w-full border-collapse text-left">
+              <thead className="sticky top-0 z-10 border-b border-line bg-surface">
+                <tr className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                  <th className="px-6 py-3 font-semibold">Playlist</th>
+                  <th className="px-6 py-3 font-semibold">Mulai</th>
+                  <th className="px-6 py-3 text-right font-semibold">Hasil</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {recentPlaylists.map((pl, idx) => (
-                  <tr
-                    key={`${pl.id}-${idx}`}
-                    className="hover:bg-surface/50 transition-colors"
-                  >
+                {siaranTerbaru.map((r) => (
+                  <tr key={r.id} className="transition-colors hover:bg-surface/50">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-lg bg-tint text-primary flex items-center justify-center shrink-0">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tint text-primary">
                           <ListVideo size={16} />
                         </span>
                         <div>
-                          <p className="text-body font-semibold text-ink leading-tight">
-                            {pl.title}
+                          <p className="text-body font-semibold leading-tight text-ink">
+                            {r.playlistNama}
                           </p>
-                          <p className="text-caption text-muted mt-0.5">
-                            {pl.count}
+                          <p className="mt-0.5 text-caption text-muted">
+                            {r.konten.length} konten · {r.tv.length} TV
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-body text-ink/80 whitespace-nowrap">
-                      {pl.schedule}
+                    <td className="whitespace-nowrap px-6 py-3 text-body text-muted">
+                      {formatWaktu(r.mulai)}
                     </td>
-                    <td className="px-6 py-3 text-right whitespace-nowrap">
-                      <PlaylistBadge status={pl.status} />
+                    <td className="whitespace-nowrap px-6 py-3 text-right">
+                      <HasilBadge hasil={r.hasil} />
                     </td>
                   </tr>
                 ))}
+
+                {siaranTerbaru.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-14 text-center">
+                      <p className="text-body font-medium text-muted">
+                        Belum ada siaran.
+                      </p>
+                      <Link
+                        to="/playback"
+                        className="mt-1 inline-block text-caption font-semibold text-primary hover:underline"
+                      >
+                        Mulai siaran dari menu Playback
+                      </Link>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </section>
 
-        {/* Kolom Kanan: Card Terpadu TV & Status Perangkat (Tinggi 540px, Simetris Sempurna dengan Kiri) */}
-        <section className="lg:col-span-5 bg-white border border-line rounded-xl shadow-card overflow-hidden flex flex-col h-[540px]">
-          {/* Header Card */}
-          <div className="px-6 py-4 flex items-center justify-between border-b border-line shrink-0 bg-white">
+        {/* Kanan: TV / perangkat */}
+        <section className="flex h-[540px] flex-col overflow-hidden rounded-xl border border-line bg-white shadow-card lg:col-span-5">
+          <div className="flex shrink-0 items-center justify-between border-b border-line px-6 py-4">
             <div>
-              <h2 className="text-card font-semibold text-ink">
-                TV / perangkat
-              </h2>
+              <h2 className="text-card font-semibold text-ink">TV / perangkat</h2>
               <p className="mt-0.5 text-caption text-muted">
-                Monitoring siaran & konektivitas layar
+                {tvOnline} dari {tv.length} terhubung
               </p>
             </div>
             <Link
               to="/perangkat"
-              className="h-8 px-3.5 inline-flex items-center gap-1.5 rounded-lg border border-line text-caption font-medium text-ink hover:bg-surface transition"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line px-3.5 text-caption font-medium text-ink transition hover:bg-surface"
             >
               <span>Kelola</span>
               <ArrowRight size={14} />
             </Link>
           </div>
 
-          {/* Quick Status Bar: Ringkasan Real-time Status Horizontal yang Rapi */}
-          <div className="px-6 py-3 bg-surface/70 border-b border-line shrink-0 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-caption font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200/60">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Terhubung
-              </span>
-
-              {/* Rincian Angka Online & Offline */}
-              <div className="flex items-center gap-3 text-caption font-medium">
-                <span className="inline-flex items-center gap-1.5 text-ink">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span>Online:</span>
-                  <strong className="text-ink">28</strong>
-                  <span className="text-muted text-[11px]">(87,5%)</span>
-                </span>
-                <span className="text-line">|</span>
-                <span className="inline-flex items-center gap-1.5 text-ink">
-                  <span className="w-2 h-2 rounded-full bg-rose-500" />
-                  <span>Offline:</span>
-                  <strong className="text-ink">3</strong>
-                  <span className="text-muted text-[11px]">(9,4%)</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Segmented Progress Bar */}
-            <div className="flex h-2 w-full overflow-hidden rounded-full bg-line/70 gap-0.5">
-              <div
-                className="h-full bg-emerald-600 rounded-full transition-all"
-                style={{ width: "87.5%" }}
-                title="Online: 28 (87,5%)"
-              />
-              <div
-                className="h-full bg-rose-500 rounded-full transition-all"
-                style={{ width: "9.4%" }}
-                title="Offline: 3 (9,4%)"
-              />
-            </div>
-          </div>
-
-          {/* List Perangkat dengan Fitur Scroll Vertikal yang Lega */}
           <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 z-10 bg-white border-b border-line shadow-xs">
-                <tr>
-                  <th className="px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                    PERANGKAT
-                  </th>
-                  <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
-                    PLAYLIST
-                  </th>
-                  <th className="px-6 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted text-right">
-                    STATUS
-                  </th>
+            <table className="w-full border-collapse text-left">
+              <thead className="sticky top-0 z-10 border-b border-line bg-surface">
+                <tr className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+                  <th className="px-6 py-2.5 font-semibold">Perangkat</th>
+                  <th className="px-6 py-2.5 text-right font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {activeDevices.map((dev) => (
-                  <tr
-                    key={dev.id}
-                    className="hover:bg-surface/50 transition-colors"
-                  >
+                {tv.map((t) => (
+                  <tr key={t.id} className="transition-colors hover:bg-surface/50">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-lg bg-tint text-primary flex items-center justify-center shrink-0">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tint text-primary">
                           <Monitor size={16} />
                         </span>
                         <div>
-                          <p className="text-body font-semibold text-ink leading-tight">
-                            {dev.code}
+                          <p className="text-body font-semibold leading-tight text-ink">
+                            {t.nama}
                           </p>
-                          <p className="text-caption text-muted mt-0.5">
-                            {dev.location}
+                          <p className="mt-0.5 font-mono text-caption text-muted">
+                            {t.ip}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-3">
-                      <p className="text-body font-medium text-ink leading-tight">
-                        {dev.playlist}
-                      </p>
-                      <p className="text-caption text-muted mt-0.5">
-                        {dev.time}
-                      </p>
-                    </td>
-                    <td className="px-6 py-3 text-right whitespace-nowrap">
-                      <DeviceBadge status={dev.status} />
+                    <td className="whitespace-nowrap px-6 py-3 text-right">
+                      {aktif && aktif.tvIds.includes(t.id) && (
+                        <span className="mr-2 text-caption text-success">Tayang</span>
+                      )}
+                      <TvStatusBadge online={t.online} />
                     </td>
                   </tr>
                 ))}
+
+                {tv.length === 0 && (
+                  <tr>
+                    <td colSpan={2} className="px-6 py-14 text-center text-body text-muted">
+                      Belum ada perangkat terdaftar.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </section>
-
       </div>
     </div>
   );
