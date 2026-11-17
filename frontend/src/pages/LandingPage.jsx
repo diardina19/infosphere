@@ -9,7 +9,7 @@ import {
   History,
   UserCog,
   Upload,
-  CalendarClock,
+  Radio,
   Activity,
   ArrowRight,
   Check,
@@ -17,39 +17,75 @@ import {
 } from "lucide-react";
 
 const features = [
-  { icon: Film, title: "Manajemen konten", desc: "Simpan dan kelola materi siaran dalam satu pustaka yang rapi.", },
-  { icon: ListVideo, title: "Playlist & jadwal", desc: "Susun kumpulan konten dan tentukan waktu penayangannya.", },
-  { icon: Monitor, title: "TV / perangkat", desc: "Kenali layar di setiap lokasi dan lihat status koneksinya.", },
-  { icon: PlayCircle, title: "Playback", desc: "Lihat playlist yang sedang diputar pada setiap perangkat.", },
-  { icon: History, title: "History", desc: "Telusuri riwayat penayangan sebagai referensi saat meninjau aktivitas.", },
-  { icon: UserCog, title: "Akun admin", desc: "Kelola daftar administrator, peran, dan informasi akun.", },
+  {
+    icon: Film,
+    title: "Manajemen konten",
+    desc: "Unggah video siaran ke pustaka dan hapus yang sudah tidak dipakai.",
+  },
+  {
+    icon: ListVideo,
+    title: "Playlist",
+    desc: "Susun konten ke dalam playlist dan atur urutan tayangnya.",
+  },
+  {
+    icon: Monitor,
+    title: "TV / perangkat",
+    desc: "Daftarkan TV lewat alamat IP dan pantau status online atau offline-nya.",
+  },
+  {
+    icon: PlayCircle,
+    title: "Playback",
+    desc: "Pilih playlist dan TV tujuan, lalu putar atau hentikan secara serentak.",
+  },
+  {
+    icon: History,
+    title: "History",
+    desc: "Setiap siaran tercatat lengkap dengan playlist, TV, dan waktunya.",
+  },
+  {
+    icon: UserCog,
+    title: "Akun admin",
+    desc: "Tambah admin baru, ubah password, dan nonaktifkan akun yang tidak lagi dipakai.",
+  },
 ];
 
 const steps = [
-  { no: "01", icon: Upload, title: "Unggah konten", desc: "Tambahkan materi, beri kategori, dan simpan ke pustaka." },
-  { no: "02", icon: ListVideo, title: "Susun playlist", desc: "Kelompokkan materi dan atur urutan tayangnya." },
-  { no: "03", icon: CalendarClock, title: "Atur penayangan", desc: "Tentukan jadwal dan perangkat TV tujuan." },
-  { no: "04", icon: Activity, title: "Pantau aktivitas", desc: "Lihat status perangkat, playback, dan riwayat." },
+  { no: "01", icon: Upload, title: "Unggah konten", desc: "Tambahkan video ke pustaka konten." },
+  { no: "02", icon: ListVideo, title: "Susun playlist", desc: "Kelompokkan video dan atur urutan tayangnya." },
+  { no: "03", icon: Radio, title: "Pilih TV dan putar", desc: "Tentukan TV tujuan, lalu tekan Putar. Semua TV tayang serentak." },
+  { no: "04", icon: Activity, title: "Pantau aktivitas", desc: "Lihat status TV dan riwayat setiap siaran." },
 ];
 
 const screens = [
-  { name: "TV Lobby Utama", playlist: "Playlist Pagi", status: "online" },
-  { name: "TV Kantin", playlist: "Informasi Umum", status: "online" },
-  { name: "TV Ruang Tunggu", playlist: "Layanan Pelanggan", status: "online" },
-  { name: "TV Area Produksi", playlist: "-", status: "offline" },
+  { name: "TV-KANTIN-01", ip: "192.168.1.101", status: "online" },
+  { name: "TV-KANTIN-02", ip: "192.168.1.102", status: "online" },
+  { name: "TV-KANTIN-03", ip: "192.168.1.103", status: "online" },
+  { name: "TV-KANTIN-04", ip: "192.168.1.104", status: "offline" },
 ];
 
 const usage = [
-  "Lihat status online dan offline setiap perangkat",
-  "Ketahui playlist yang sedang tayang di tiap lokasi",
-  "Tinjau riwayat penayangan kapan saja",
+  "Lihat status online dan offline setiap TV",
+  "Ketahui playlist yang sedang tayang dan di TV mana",
+  "Tinjau riwayat siaran kapan saja",
 ];
 
 const faqs = [
-  { q: "Siapa yang bisa mengakses sistem ini?", a: "Hanya administrator terdaftar. Setiap administrator memiliki hak akses penuh untuk mengelola siaran." },
-  { q: "Apakah konten bisa dijadwalkan?", a: "Bisa. Playlist dapat diberi jadwal tayang dan dikirim ke perangkat TV tertentu." },
-  { q: "Bagaimana cara mengetahui TV sedang aktif?", a: "Setiap perangkat menampilkan status online atau offline di dashboard." },
-  { q: "Apakah satu playlist bisa dipakai di banyak TV?", a: "Bisa. Satu playlist dapat ditujukan ke beberapa perangkat sekaligus." },
+  {
+    q: "Siapa yang bisa mengakses sistem ini?",
+    a: "Hanya administrator terdaftar. Semua administrator memiliki hak akses yang sama untuk mengelola siaran.",
+  },
+  {
+    q: "Bagaimana cara memutar siaran ke TV?",
+    a: "Pilih playlist dan TV tujuan di menu Playback, lalu tekan Putar. Semua TV yang dipilih menayangkan playlist yang sama secara serentak. Tekan Hentikan untuk mengakhiri.",
+  },
+  {
+    q: "Apakah sistem membutuhkan internet?",
+    a: "Tidak. Sistem berjalan di jaringan lokal perusahaan, jadi TV tidak perlu terhubung ke internet.",
+  },
+  {
+    q: "Berapa banyak TV yang bisa dihubungkan?",
+    a: "Penerapan awal dimulai dari 8 TV dan dirancang bisa bertambah hingga sekitar 100 TV. Status online atau offline tiap TV terlihat di dashboard.",
+  },
 ];
 
 function Eyebrow({ children }) {
@@ -91,39 +127,32 @@ function LandingPage() {
       <Navbar />
 
       {/* Hero */}
-      <section id="beranda" className="relative bg-dark text-white scroll-mt-18 overflow-hidden select-none">
-        {/* Background visual dengan gambar server / control room seperti di halaman login */}
+      <section
+        id="beranda"
+        className="relative bg-dark text-white scroll-mt-18 overflow-hidden select-none"
+      >
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-45 scale-105 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-45 pointer-events-none"
           style={{ backgroundImage: `url(${authBg})` }}
         />
-        {/* Overlay gradien biru agar tetap elegan, teks mudah terbaca, dan gambar terlihat pas */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#001f3d]/80 via-[#002b50]/75 to-[#00172e]/85 pointer-events-none" />
 
-        {/* Efek grid dot halus */}
-        <div
-          className="absolute inset-0 opacity-10 pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-
         <div className="relative z-10 max-w-3xl mx-auto px-8 py-24 text-center">
-          <span className="inline-block text-caption text-white/90 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3.5 py-1 shadow-2xs">
-            Sistem Informasi Perusahaan
+          <span className="inline-block text-caption text-white/90 bg-white/10 border border-white/20 rounded-full px-3.5 py-1">
+            Sistem Manajemen TV
           </span>
-          <h1 className="mt-6 text-metric font-bold text-white drop-shadow-sm">
+          <h1 className="mt-6 text-metric font-bold text-white">
             Kelola seluruh layar informasi perusahaan
             <br />
             dalam satu tempat.
           </h1>
           <p className="mt-4 max-w-xl mx-auto text-body text-white/80 leading-relaxed">
-            Atur konten, playlist, dan jadwal tayang secara terpusat untuk seluruh layar PT Sumitomo.
+            Unggah konten, susun playlist, dan siarkan serentak ke seluruh TV
+            informasi perusahaan dari satu dashboard.
           </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-caption text-white/80">
-            {["Konten terorganisir", "Jadwal terencana", "Perangkat terpantau"].map((item) => (
+
+          <div className="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-caption text-white/80">
+            {["Tayang seragam", "Update sekali, serentak", "Status TV terpantau"].map((item) => (
               <span key={item} className="inline-flex items-center gap-2">
                 <Check size={14} className="text-accent" />
                 {item}
@@ -138,11 +167,11 @@ function LandingPage() {
         <SectionHeader
           eyebrow="Fitur sistem"
           title="Semua kebutuhan siaran, saling terhubung."
-          desc="Satu ruang kerja untuk mengelola materi, merencanakan penayangan, dan mengikuti aktivitas jaringan layar."
+          desc="Satu ruang kerja untuk mengelola konten, menyusun playlist, menyiarkan ke TV, dan memantau aktivitasnya."
         />
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ icon: Icon, title, desc, tags }) => (
+          {features.map(({ icon: Icon, title, desc }) => (
             <article
               key={title}
               className="bg-white border border-line rounded-xl p-6 shadow-card"
@@ -152,7 +181,6 @@ function LandingPage() {
               </span>
               <h3 className="mt-4 text-card font-semibold">{title}</h3>
               <p className="mt-2 text-body text-muted">{desc}</p>
-              <p className="mt-4 text-caption text-primary">{tags}</p>
             </article>
           ))}
         </div>
@@ -163,7 +191,7 @@ function LandingPage() {
         <div className="max-w-6xl mx-auto px-8 py-20">
           <SectionHeader
             eyebrow="Cara kerja"
-            title="Dari materi ke layar, dengan alur yang jelas."
+            title="Dari video ke layar, dengan alur yang jelas."
           />
 
           <div className="mt-10 grid gap-8 md:grid-cols-4">
@@ -195,8 +223,8 @@ function LandingPage() {
             Pantau semua layar dari satu dashboard.
           </h2>
           <p className="mt-3 text-body text-muted">
-            Tidak perlu datang ke lokasi untuk memastikan siaran berjalan.
-            Semua informasi penting tersedia dalam satu tampilan.
+            Tidak perlu lagi mendatangi tiap TV untuk memperbarui atau memeriksa
+            tampilannya. Semua informasi penting tersedia dalam satu tampilan.
           </p>
           <ul className="mt-6 space-y-3">
             {usage.map((item) => (
@@ -211,8 +239,11 @@ function LandingPage() {
         </div>
 
         <div className="bg-white border border-line rounded-xl shadow-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-line text-card font-semibold">
-            Status perangkat
+          <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
+            <span className="text-card font-semibold">Status perangkat</span>
+            <span className="text-caption text-muted">
+              Sedang tayang: Informasi Umum
+            </span>
           </div>
           <ul>
             {screens.map((s) => (
@@ -222,7 +253,7 @@ function LandingPage() {
               >
                 <div>
                   <p className="text-body font-medium">{s.name}</p>
-                  <p className="text-caption text-muted">{s.playlist}</p>
+                  <p className="font-mono text-caption text-muted">{s.ip}</p>
                 </div>
                 <StatusBadge status={s.status} />
               </li>
@@ -261,7 +292,7 @@ function LandingPage() {
         <div className="bg-primary rounded-xl px-8 py-12 text-center text-white">
           <h2 className="text-title font-semibold">Siap mengelola layar Anda?</h2>
           <p className="mt-2 text-body text-white/70">
-            Masuk sebagai administrator untuk mulai mengatur konten dan penayangan.
+            Masuk sebagai administrator untuk mulai mengelola konten dan siaran.
           </p>
           <Link
             to="/login"
@@ -277,7 +308,7 @@ function LandingPage() {
       <footer className="bg-dark text-caption text-white/60">
         <div className="max-w-6xl mx-auto px-8 py-6 flex flex-wrap justify-between gap-2">
           <span>© 2026 INFOSPHERE</span>
-          <span>Sistem Manajemen Tv Terpusat</span>
+          <span>Sistem Manajemen TV Terpusat</span>
         </div>
       </footer>
     </div>
